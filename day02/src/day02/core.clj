@@ -4,7 +4,7 @@
 (defn parse-input [input] (string/split-lines input))
 
 (defn has-any-letter-count-fn [count]
-  (fn [id] (some #{count} (vals (frequencies id)))))
+  #(some #{count} (vals (frequencies %))))
 
 (defn count-ids [ids letter-count]
   (let [has-any-letter-count (has-any-letter-count-fn letter-count)]
@@ -19,8 +19,7 @@
 (defn count-different-letters [word1 word2]
   (count (filter (complement zero?) (mapv compare word1 word2))))
 
-(defn correct-boxes [id1 id2]
-  (= 1 (count-different-letters id1 id2)))
+(defn correct-boxes [id1 id2] (= 1 (count-different-letters id1 id2)))
 
 (defn find-correct-boxes [ids]
   (first (for [id1 ids id2 ids
