@@ -16,7 +16,8 @@
   (mapv (comp claim-values->map parse-claim) (string/split-lines input)))
 
 (defn convert-claim-to-square-inches [{:keys [left top width height]}]
-  (for [x (range left (+ left width)) y (range top (+ top height))] [x y]))
+  (for [x (range 0 width) y (range 0 height)]
+    [(+ left x) (+ top y)]))
 
 (defn convert-claims-to-square-inches [claims]
   (apply concat (map convert-claim-to-square-inches claims)))
