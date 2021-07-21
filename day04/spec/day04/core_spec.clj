@@ -19,30 +19,30 @@
         (parse-record "[1518-11-02 00:50] wakes up")))
 
     (it "should be able to parse a 'begins shift' record."
-      (should== {:day "1518-11-03", :hour "00", :minutes 5, :type :begins-shift, :guard 10}
+      (should== {:day "1518-11-03", :hour "00", :minutes 5, :type :start-shift, :guard 10}
         (parse-record "[1518-11-03 00:05] Guard #10 begins shift")))
 
     (it "should be able to parse multiple records"
       (let [input "[1518-11-02 00:40] falls asleep\n[1518-11-02 00:50] wakes up\n[1518-11-03 00:05] Guard #10 begins shift\n"]
         (should= [{:day "1518-11-02", :hour "00", :minutes 40, :type :fall-asleep}
                   {:day "1518-11-02", :hour "00", :minutes 50, :type :wakes-up}
-                  {:day "1518-11-03", :hour "00", :minutes 5, :type :begins-shift, :guard 10}]
+                  {:day "1518-11-03", :hour "00", :minutes 5, :type :start-shift, :guard 10}]
           (parse-records input))))
 
     (it "should sort records by date"
       (let [input "[1518-11-03 00:05] Guard #10 begins shift\n[1518-11-02 00:50] wakes up\n[1518-11-02 00:40] falls asleep\n"]
         (should= [{:day "1518-11-02", :hour "00", :minutes 40, :type :fall-asleep}
                   {:day "1518-11-02", :hour "00", :minutes 50, :type :wakes-up}
-                  {:day "1518-11-03", :hour "00", :minutes 5, :type :begins-shift, :guard 10}]
+                  {:day "1518-11-03", :hour "00", :minutes 5, :type :start-shift, :guard 10}]
           (parse-records input)))))
 
   (context "Replay records"
 
     (it "should keep track which guard begins a shift."
       (should= {:guard 10, :minutes-asleep-by-guard {}}
-        (replay {:minutes-asleep-by-guard {}} {:day "1518-11-03", :hour "00", :minutes 5, :type :begins-shift, :guard 10}))
+        (replay {:minutes-asleep-by-guard {}} {:day "1518-11-03", :hour "00", :minutes 5, :type :start-shift, :guard 10}))
       (should= {:guard 99}
-        (replay {} {:day "1518-11-01", :hour "23", :minutes 58, :type :begins-shift, :guard 99})))
+        (replay {} {:day "1518-11-01", :hour "23", :minutes 58, :type :start-shift, :guard 99})))
 
     (it "should keep track when a guard falls asleep."
       (should= {:guard 10, :asleep-since 40}

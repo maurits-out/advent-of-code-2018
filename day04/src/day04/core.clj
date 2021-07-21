@@ -13,14 +13,14 @@
     (if-let [[_ day hour minutes] (re-matches regex-falls-wakes-up line)]
       {:day day, :hour hour, :minutes (parse-int minutes), :type :wakes-up}
       (let [[_ day hour minutes guard] (re-matches regex-falls-begins-shift line)]
-        {:day day, :hour hour, :minutes (parse-int minutes), :type :begins-shift, :guard (parse-int guard)}))))
+        {:day day, :hour hour, :minutes (parse-int minutes), :type :start-shift, :guard (parse-int guard)}))))
 
 (defn parse-records [input]
   (let [lines (string/split-lines input)]
     (sort-by (juxt :day :hour :minutes) (mapv parse-record lines))))
 
 (defmulti replay (fn [_ record] (:type record)))
-(defmethod replay :begins-shift [state {:keys [guard]}]
+(defmethod replay :start-shift [state {:keys [guard]}]
   (assoc state :guard guard))
 (defmethod replay :fall-asleep [state {:keys [minutes]}]
   (assoc state :asleep-since minutes))
