@@ -23,12 +23,12 @@
 (defmethod replay :begins-shift [state {:keys [guard]}]
   (assoc state :guard guard))
 (defmethod replay :fall-asleep [state {:keys [minutes]}]
-  (assoc state :sleep-start minutes))
-(defmethod replay :wakes-up [{:keys [guard sleep-start minutes-asleep-by-guard]} {:keys [minutes]}]
-  (let [range (range sleep-start minutes)
+  (assoc state :asleep-since minutes))
+(defmethod replay :wakes-up [{:keys [guard asleep-since minutes-asleep-by-guard]} {:keys [minutes]}]
+  (let [minute-range (range asleep-since minutes)
         minutes-asleep (get minutes-asleep-by-guard guard [])]
     {:guard                   guard,
-     :minutes-asleep-by-guard (assoc minutes-asleep-by-guard guard (concat minutes-asleep range))}))
+     :minutes-asleep-by-guard (assoc minutes-asleep-by-guard guard (concat minutes-asleep minute-range))}))
 
 (defn replay-records [records]
   (reduce replay {} records))

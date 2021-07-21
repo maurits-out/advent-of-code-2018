@@ -45,15 +45,15 @@
         (replay {} {:day "1518-11-01", :hour "23", :minutes 58, :type :begins-shift, :guard 99})))
 
     (it "should keep track when a guard falls asleep."
-      (should= {:guard 10, :sleep-start 40}
+      (should= {:guard 10, :asleep-since 40}
         (replay {:guard 10} {:day "1518-11-02", :hour "00", :minutes 40, :type :fall-asleep})))
 
     (it "should record the minutes when a guard wakes up."
       (should= {:guard 10, :minutes-asleep-by-guard {10 [5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24]}}
-        (replay {:guard 10, :sleep-start 5, :minutes-asleep-by-guard {}}
+        (replay {:guard 10, :asleep-since 5, :minutes-asleep-by-guard {}}
           {:day "1518-11-01", :hour "00", :minutes 25, :type :wakes-up}))
       (should= {:guard 10, :minutes-asleep-by-guard {10 [1 2 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24]}}
-        (replay {:guard 10, :sleep-start 5, :minutes-asleep-by-guard {10 [1 2]}}
+        (replay {:guard 10, :asleep-since 5, :minutes-asleep-by-guard {10 [1 2]}}
           {:day "1518-11-01", :hour "00", :minutes 25, :type :wakes-up}))))
 
   (context "Finding guard"
