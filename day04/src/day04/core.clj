@@ -5,13 +5,15 @@
 (def regex-falls-wakes-up #"\[(.{10}) (\d{2}):(\d{2})\] wakes up")
 (def regex-falls-begins-shift #"\[(.{10}) (\d{2}):(\d{2})\] Guard #(\d+) begins shift")
 
+(defn parse-int [s] (Integer/parseInt s))
+
 (defn parse-record [line]
   (if-let [[_ day hour minutes] (re-matches regex-falls-asleep line)]
-    {:day day, :hour hour, :minutes minutes, :type :fall-asleep}
+    {:day day, :hour hour, :minutes (parse-int minutes), :type :fall-asleep}
     (if-let [[_ day hour minutes] (re-matches regex-falls-wakes-up line)]
-      {:day day, :hour hour, :minutes minutes, :type :wakes-up}
+      {:day day, :hour hour, :minutes (parse-int minutes), :type :wakes-up}
       (let [[_ day hour minutes guard] (re-matches regex-falls-begins-shift line)]
-        {:day day, :hour hour, :minutes minutes, :type :begins-shift, :guard guard}))))
+        {:day day, :hour hour, :minutes (parse-int minutes), :type :begins-shift, :guard (parse-int guard)}))))
 
 (defn parse-records [input]
   (let [lines (string/split-lines input)]
@@ -23,13 +25,13 @@
 (defmethod replay :fall-asleep [state {:keys [minutes]}]
   (assoc state :sleep-start minutes))
 (defmethod replay :wakes-up [{:keys [guard sleep-start minutes-asleep-by-guard]} {:keys [minutes]}]
-  (let [range (range (Integer/parseInt sleep-start) (Integer/parseInt minutes))
+  (let [range (range sleep-start minutes)
         minutes-asleep (get minutes-asleep-by-guard guard [])]
     {:guard                   guard,
      :minutes-asleep-by-guard (assoc minutes-asleep-by-guard guard (concat minutes-asleep range))}))
 
 (defn replay-records [records]
-  (reduce replay {:minutes-asleep-by-guard {}} records))
+  (reduce replay {} records))
 
 (defn find-guard-with-most-minutes-asleep [asleep]
   (key (apply max-key (comp count val) asleep)))
@@ -42,4 +44,4 @@
         minutes-asleep-by-guard (:minutes-asleep-by-guard (replay-records records))
         guard (find-guard-with-most-minutes-asleep minutes-asleep-by-guard)
         minute (find-minute-most-asleep (get minutes-asleep-by-guard guard))]
-    (* (Integer/parseInt guard) minute)))
+    (* guard minute)))
