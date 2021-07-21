@@ -61,14 +61,18 @@
     (it "should find the guard that has the most minutes asleep."
       (should= 10 (find-guard-with-most-minutes-asleep {5 [1 2], 10 [5 6 7]})))
     (it "should find the minute that a guard spends asleep the most"
-      (should= 3 (find-minute-most-asleep [1 2 3 3 4 5 6 6 3]))))
+      (should= {:guard 5, :minute 3, :count 3} (find-minute-most-asleep [5 [1 2 3 3 4 5 6 6 3]]))))
 
   (context "Examples"
 
     (it "should solve part 1"
-      (should= 240 (solve1 (slurp example-file)))))
+      (should= 240 (solve1 (slurp example-file))))
+    (it "should solve part 2"
+      (should= 4455 (solve2 (slurp example-file)))))
 
   (context "Solutions"
 
     (it "should solve part 1"
-      (should= 67558 (solve1 (slurp input-file))))))
+      (should= 67558 (solve1 (slurp input-file))))
+    (it "should solve part 2"
+      (should= 78990 (solve2 (slurp input-file))))))

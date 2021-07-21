@@ -36,12 +36,22 @@
 (defn find-guard-with-most-minutes-asleep [asleep]
   (key (apply max-key (comp count val) asleep)))
 
-(defn find-minute-most-asleep [minutes]
-  (key (apply max-key val (frequencies minutes))))
+(defn find-minute-most-asleep [[guard minutes]]
+  (let [minute-counts (frequencies minutes)
+        minute-max-count (key (apply max-key val minute-counts))
+        count (get minute-counts minute-max-count)]
+    {:guard guard, :minute minute-max-count, :count count}))
 
 (defn solve1 [input]
   (let [records (parse-records input)
         minutes-asleep-by-guard (:minutes-asleep-by-guard (replay-records records))
         guard (find-guard-with-most-minutes-asleep minutes-asleep-by-guard)
-        minute (find-minute-most-asleep (get minutes-asleep-by-guard guard))]
-    (* guard minute)))
+        stats (find-minute-most-asleep [guard (get minutes-asleep-by-guard guard)])]
+    (* guard (:minute stats))))
+
+(defn solve2 [input]
+  (let [records (parse-records input)
+        minutes-asleep-by-guard (:minutes-asleep-by-guard (replay-records records))
+        stats (map #(find-minute-most-asleep %) minutes-asleep-by-guard)
+        max (apply max-key :count stats)]
+    (* (:guard max) (:minute max))))
