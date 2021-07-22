@@ -1,8 +1,7 @@
 (ns day05.core-spec
   (:require [speclj.core :refer :all]
             [day05.core :refer :all]
-            [clojure.java.io :as io]
-            [criterium.core :as crit]))
+            [clojure.java.io :as io]))
 
 (def input-file (io/resource "input.txt"))
 

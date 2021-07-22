@@ -4,15 +4,15 @@
   (= (Math/abs (- (int u) (int v))) 32))
 
 (defn less-than-two-units-remaining? [p i]
-  (>= i (dec (.length p))))
+  (>= i (dec (count p))))
 
 (defn remove-two-units [p i]
-  (str (.substring p 0 i) (.substring p (+ i 2))))
+  (str (subs p 0 i) (subs p (+ i 2))))
 
 (defn react [polymer]
   (loop [i 0 p polymer]
     (if (less-than-two-units-remaining? p i)
-      (.length p)
-      (if (react? (.charAt p i) (.charAt p (inc i)))
+      (count p)
+      (if (react? (get p i) (get p (inc i)))
         (recur (max 0 (dec i)) (remove-two-units p i))
         (recur (inc i) p)))))
