@@ -6,7 +6,7 @@
 (defn less-than-two-units-remaining? [p i]
   (>= i (dec (count p))))
 
-(defn remove-two-units [p i]
+(defn react-units [p i]
   (str (subs p 0 i) (subs p (+ i 2))))
 
 (defn react [polymer]
@@ -14,5 +14,5 @@
     (if (less-than-two-units-remaining? p i)
       (count p)
       (if (react? (get p i) (get p (inc i)))
-        (recur (max 0 (dec i)) (remove-two-units p i))
+        (recur (max 0 (dec i)) (react-units p i))
         (recur (inc i) p)))))
