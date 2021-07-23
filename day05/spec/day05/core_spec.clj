@@ -28,10 +28,23 @@
       (should= 2 (react "aACBbD"))
       (should= 0 (react "abBA"))))
 
+  (context "Finding all unit types"
+    (it "should find all unit types"
+      (should= #{\a \b \c \d} (extract-unit-types "dabAcCaCBAcCcaDA"))))
+
+  (context "Removing units from polymer by type"
+    (it "should remove all units of a specific type from a polymer."
+      (should= "dbcCCBcCcD" (remove-units "dabAcCaCBAcCcaDA" \a))
+      (should= "daAcCaCAcCcaDA" (remove-units "dabAcCaCBAcCcaDA" \b))))
+
   (context "Examples"
     (it "should solve part 1"
-      (should= 10 (react "dabAcCaCBAcCcaDA"))))
+      (should= 10 (react "dabAcCaCBAcCcaDA")))
+    (it "should solve part 2"
+      (should= 4 (length-of-shortest-polymer "dabAcCaCBAcCcaDA"))))
 
   (context "Solutions"
     (it "should solve part 1"
-      (should= 11118 (react (slurp input-file))))))
+      (should= 11118 (react (slurp input-file))))
+    (it "should solve part 2"
+      (should= 6948 (length-of-shortest-polymer (slurp input-file))))))
