@@ -1,7 +1,8 @@
 (ns day05.core-spec
   (:require [speclj.core :refer :all]
             [day05.core :refer :all]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [criterium.core :as crit]))
 
 (def input-file (io/resource "input.txt"))
 
@@ -30,12 +31,12 @@
 
   (context "Finding all unit types"
     (it "should find all unit types"
-      (should= #{\a \b \c \d} (extract-unit-types "dabAcCaCBAcCcaDA"))))
+      (should= [\d \a \b \c] (extract-unit-types "dabAcCaCBAcCcaDA"))))
 
   (context "Removing units from polymer by type"
     (it "should remove all units of a specific type from a polymer."
-      (should= "dbcCCBcCcD" (remove-units "dabAcCaCBAcCcaDA" \a))
-      (should= "daAcCaCAcCcaDA" (remove-units "dabAcCaCBAcCcaDA" \b))))
+      (should= [\d \b \c \C \C \B \c \C \c \D] (remove-units "dabAcCaCBAcCcaDA" \a))
+      (should= [\d \a \A \c \C \a \C \A \c \C \c \a \D \A] (remove-units "dabAcCaCBAcCcaDA" \b))))
 
   (context "Examples"
     (it "should solve part 1"
