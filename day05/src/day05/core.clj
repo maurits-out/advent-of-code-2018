@@ -10,13 +10,11 @@
     (let [[u v] (take 2 rem)]
       (if (nil? u)
         (count res)
-        (if (nil? v)
-          (inc (count res))
-          (if (react? u v)
-            (if (empty? res)
-              (recur res (drop 2 rem))
-              (recur (rest res) (cons (first res) (drop 2 rem))))
-            (recur (cons u res) (rest rem))))))))
+        (if (and v (react? u v))
+          (if (empty? res)
+            (recur res (drop 2 rem))
+            (recur (rest res) (cons (first res) (drop 2 rem))))
+          (recur (cons u res) (rest rem)))))))
 
 (defn extract-unit-types [polymer]
   (distinct (string/lower-case polymer)))
