@@ -5,8 +5,7 @@
   (= (Math/abs (- (int u) (int v))) 32))
 
 (defn react [polymer]
-  (loop [res '()
-         rem polymer]
+  (loop [res '() rem polymer]
     (let [[u v] (take 2 rem)]
       (if (nil? u)
         (count res)
