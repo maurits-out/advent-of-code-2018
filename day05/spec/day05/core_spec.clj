@@ -20,14 +20,14 @@
 
   (context "Fully react polymer"
     (it "should be able to fully react a polymer"
-      (should= 0 (react ""))
-      (should= 1 (react "a"))
-      (should= 0 (react "aA"))
-      (should= 1 (react "aAC"))
-      (should= 1 (react "abB"))
-      (should= 1 (react "aACBb"))
-      (should= 2 (react "aACBbD"))
-      (should= 0 (react "abBA"))))
+      (should= 0 (react-polymer ""))
+      (should= 1 (react-polymer "a"))
+      (should= 0 (react-polymer "aA"))
+      (should= 1 (react-polymer "aAC"))
+      (should= 1 (react-polymer "abB"))
+      (should= 1 (react-polymer "aACBb"))
+      (should= 2 (react-polymer "aACBbD"))
+      (should= 0 (react-polymer "abBA"))))
 
   (context "Finding all unit types"
     (it "should find all unit types"
@@ -40,12 +40,12 @@
 
   (context "Examples"
     (it "should solve part 1"
-      (should= 10 (react "dabAcCaCBAcCcaDA")))
+      (should= 10 (react-polymer "dabAcCaCBAcCcaDA")))
     (it "should solve part 2"
       (should= 4 (length-of-shortest-polymer "dabAcCaCBAcCcaDA"))))
 
   (context "Solutions"
     (it "should solve part 1"
-      (should= 11118 (react (slurp input-file))))
+      (should= 11118 (react-polymer (slurp input-file))))
     (it "should solve part 2"
       (should= 6948 (length-of-shortest-polymer (slurp input-file))))))

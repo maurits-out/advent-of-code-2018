@@ -4,7 +4,7 @@
 (defn react? [u v]
   (= (Math/abs (- (int u) (int v))) 32))
 
-(defn react [polymer]
+(defn react-polymer [polymer]
   (loop [res '() rem polymer]
     (let [[u v] (take 2 rem)]
       (if (nil? u)
@@ -25,5 +25,5 @@
 (defn length-of-shortest-polymer [polymer]
   (let [unit-types (extract-unit-types polymer)
         remaining-polymers (map #(remove-units polymer %) unit-types)
-        lengths (map #(react %) remaining-polymers)]
+        lengths (map #(react-polymer %) remaining-polymers)]
     (apply min lengths)))
