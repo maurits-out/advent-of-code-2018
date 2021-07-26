@@ -70,10 +70,10 @@
 (defn part2 [input total-distance]
   (let [coordinates (parse-input input)
         center (center-coordinates-of-partial-view coordinates)]
-    (loop [iteration 0 current-size 0]
+    (loop [iteration 0 size 0]
       (let [location-count (count (for [l (generate-border center iteration)
                                         :when (< (calculate-total-distance coordinates l) total-distance)]
                                     l))]
         (if (zero? location-count)
-          current-size
-          (recur (inc iteration) (+ current-size location-count)))))))
+          size
+          (recur (inc iteration) (+ size location-count)))))))
