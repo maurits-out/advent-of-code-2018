@@ -14,7 +14,7 @@
    (if (zero? num-nodes)
      [numbers acc]
      (let [[remaining updated-acc] (sum-of-metadata-entries numbers acc)]
-       (sum-of-metadata-entries remaining (dec num-nodes) updated-acc)))))
+       (recur remaining (dec num-nodes) updated-acc)))))
 
 (defn part1 [input]
   (second (sum-of-metadata-entries (parse-input input) 0)))
