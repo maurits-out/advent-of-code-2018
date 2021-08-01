@@ -15,7 +15,7 @@
 
   (context "Calculating the sum of the metadata entries"
     (it "should calculate the sum of the metadata entries."
-      (should= [138 '()] (sum-of-metadata-entries [2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2] 0))))
+      (should= ['() 138] (sum-of-metadata-entries [2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2] 0))))
 
   (context "Solutions"
     (it "should solve part 1."

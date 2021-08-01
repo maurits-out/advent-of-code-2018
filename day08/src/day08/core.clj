@@ -4,19 +4,17 @@
 (defn parse-input [input]
   (map #(Integer/parseInt %) (string/split input #" ")))
 
-(declare sum-of-metadata-entries)
-
 (defn sum-of-metadata-entries
   ([numbers acc]
    (let [[num-child-nodes num-metadata-entries & rest] numbers
-         [sum remaining] (sum-of-metadata-entries rest num-child-nodes acc)
+         [remaining updated-acc] (sum-of-metadata-entries rest num-child-nodes acc)
          [xs ys] (split-at num-metadata-entries remaining)]
-     [(apply + (cons sum xs)) ys]))
+     [ys (apply + (cons updated-acc xs))]))
   ([numbers num-nodes acc]
    (if (zero? num-nodes)
-     [acc numbers]
-     (let [[sum remaining] (sum-of-metadata-entries numbers acc)]
-       (sum-of-metadata-entries remaining (dec num-nodes) sum)))))
+     [numbers acc]
+     (let [[remaining updated-acc] (sum-of-metadata-entries numbers acc)]
+       (sum-of-metadata-entries remaining (dec num-nodes) updated-acc)))))
 
 (defn part1 [input]
-  (first (sum-of-metadata-entries (parse-input input) 0)))
+  (second (sum-of-metadata-entries (parse-input input) 0)))
