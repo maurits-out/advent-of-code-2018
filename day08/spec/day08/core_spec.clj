@@ -5,6 +5,7 @@
             [clojure.string :as string]))
 
 (def input-file (io/resource "input.txt"))
+(def input (string/trim-newline (slurp input-file)))
 
 (describe "Day 8"
 
@@ -15,8 +16,10 @@
 
   (context "Calculating the sum of the metadata entries"
     (it "should calculate the sum of the metadata entries."
-      (should= ['() 138] (sum-of-metadata-entries [2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2] 0))))
+      (should= ['() 138] (sum-of-node [2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2]))))
 
   (context "Solutions"
     (it "should solve part 1."
-      (should= 46829 (part1 (string/trim-newline (slurp input-file)))))))
+      (should= 46829 (part1 input)))
+    (it "should solve part 2."
+      (should= 37450 (part2 input)))))
