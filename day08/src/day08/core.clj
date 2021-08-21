@@ -7,16 +7,16 @@
 (declare sum-of-node)
 
 (defn calculate-sum [child-values metadata]
-  (apply + (concat child-values metadata)))
+  (apply + (conj metadata child-values )))
 
 (defn sum-of-child-nodes [numbers num-child-nodes acc]
   (if (zero? num-child-nodes)
     [numbers acc]
     (let [[remaining sum] (sum-of-node numbers)]
-      (recur remaining (dec num-child-nodes) (conj acc sum)))))
+      (recur remaining (dec num-child-nodes) (+ acc sum)))))
 
 (defn sum-of-node [[num-child-nodes num-metadata-entries & numbers]]
-  (let [[remaining child-values] (sum-of-child-nodes numbers num-child-nodes [])
+  (let [[remaining child-values] (sum-of-child-nodes numbers num-child-nodes 0)
         [metadata rest] (split-at num-metadata-entries remaining)]
     [rest (calculate-sum child-values metadata)]))
 
