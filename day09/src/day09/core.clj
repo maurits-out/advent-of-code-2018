@@ -26,27 +26,16 @@
     (assoc! after :prev before)
     {:new-current after, :deleted-marble (:value to-delete)}))
 
-(defn winning-score [scoreboard]
-  (apply max (vals scoreboard)))
-
-(defn game-ends? [marble highest]
-  (> marble highest))
-
-(defn next-marble [marble]
-  (inc marble))
-
-(defn update-player-score [current-score marble-to-play deleted-marble]
-  (+ (or current-score 0) marble-to-play deleted-marble))
-
 (defn play [player-count highest-marble]
   (loop [current-marble (initial-circle)
          scoreboard {}
-         marble-to-play 1
-         players (cycle (range 1 (inc player-count)))]
-    (if (game-ends? marble-to-play highest-marble)
-      (winning-score scoreboard)
+         [marble-to-play & remaining-marbles] (range 1 (inc highest-marble))
+         [current-player & players] (cycle (range 1 (inc player-count)))]
+    (if marble-to-play
       (if (zero? (rem marble-to-play 23))
         (let [{:keys [new-current deleted-marble]} (delete-marble current-marble)
-              updated-scoreboard (update scoreboard (first players) #(update-player-score % marble-to-play deleted-marble))]
-          (recur new-current updated-scoreboard (next-marble marble-to-play) (rest players)))
-        (recur (add-marble current-marble marble-to-play) scoreboard (next-marble marble-to-play) (rest players))))))
+              update-player-score-fn #(+ (or % 0) marble-to-play deleted-marble)
+              updated-scoreboard (update scoreboard current-player update-player-score-fn)]
+          (recur new-current updated-scoreboard remaining-marbles players))
+        (recur (add-marble current-marble marble-to-play) scoreboard remaining-marbles players))
+      (apply max (vals scoreboard)))))
