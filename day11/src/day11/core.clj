@@ -16,13 +16,13 @@
                  y (range top-y (+ top-y square-size))]
              (power-level x y grid-serial-number))))
 
-(defn coordinates []
+(defn square-coordinates []
   (let [r (range (- grid-size (dec square-size)))]
     (for [x r, y r] [x y])))
 
 (defn square-powers [grid-serial-number]
   (into (hash-map)
-        (for [[x y] (coordinates)]
+        (for [[x y] (square-coordinates)]
           [[x y] (square-power x y grid-serial-number)])))
 
 (defn part1 [grid-serial-number]
