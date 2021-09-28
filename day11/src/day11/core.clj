@@ -51,7 +51,7 @@
 
 (defn part2 []
   (let [partial-sums (generate-partial-sums)
-        [[x y] size] (->> (range 1 (inc grid-size))
-                          (map (fn [size] [(square-with-largest-power-level size partial-sums) size]))
-                          (apply max-key (fn [[c size]] (square-power-level c size partial-sums))))]
-    (string/join "," [x y size])))
+        result (->> (range 1 (inc grid-size))
+                    (map (fn [size] [(square-with-largest-power-level size partial-sums) size]))
+                    (apply max-key (fn [[c size]] (square-power-level c size partial-sums))))]
+    (string/join "," (flatten result))))
