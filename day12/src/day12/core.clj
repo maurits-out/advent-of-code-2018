@@ -2,8 +2,6 @@
   (:require [clojure.string :as string]
             [clojure.java.io :as io]))
 
-(def pattern-rule-length 5)
-
 (defn parse-rules [lines]
   (into (hash-map) (for [l lines]
                      (let [[_ left right] (re-matches #"(.{5}) => (.)" l)]
@@ -23,7 +21,7 @@
 
 (defn update-plants [rules plants]
   (->> (str "...." plants "....")
-       (partition pattern-rule-length 1)
+       (partition 5 1)
        (map (comp #(get rules % \.) string/join))
        (string/join)))
 
