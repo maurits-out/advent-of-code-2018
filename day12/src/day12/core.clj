@@ -30,10 +30,8 @@
 (defn next-generation [rules {:keys [plants offset]}]
   (trim (update-plants rules plants) offset))
 
-(defn initial-state [plants] {:plants plants :offset 0})
-
 (defn generations [plants rules]
-  (iterate (partial next-generation rules) (initial-state plants)))
+  (iterate (partial next-generation rules) {:plants plants :offset 0}))
 
 (defn part1 []
   (let [{:keys [input-plants rules]} (read-input)
