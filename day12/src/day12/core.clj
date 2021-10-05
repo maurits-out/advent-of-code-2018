@@ -31,8 +31,19 @@
 (defn generations [plants rules]
   (iterate (partial next-generation rules) {:plants plants :offset 0}))
 
+(defn sum-of-numbers [plants offset]
+  (apply + (keep-indexed #(if (= %2 \#) (+ %1 offset)) plants)))
+
 (defn part1 []
   (let [{:keys [input-plants rules]} (read-input)
-        {:keys [plants offset]} (nth (generations input-plants rules) 20)
-        indices (keep-indexed #(if (= %2 \#) (+ %1 offset)) plants)]
-    (apply + indices)))
+        {:keys [plants offset]} (nth (generations input-plants rules) 20)]
+    (sum-of-numbers plants offset)))
+
+(defn part2 []
+  (let [{:keys [input-plants rules]} (read-input)]
+    (loop [[current next & _ :as all] (generations input-plants rules)
+           count 0]
+      (if (= (:plants current) (:plants next))
+        (let [increment (- (:offset next) (:offset current))]
+          (sum-of-numbers (:plants next) (+ (:offset current) (* increment (- 50000000000 count)))))
+        (recur (rest all) (inc count))))))
