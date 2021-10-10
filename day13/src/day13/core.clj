@@ -17,18 +17,20 @@
     {:x x :y y :heading (car-char-to-heading ch) :next-turn 0}))
 
 (defn replace-car-char [ch]
-  (case ch (\< \>) \-
-           (\^ \v) \|
-           ch))
+  (case ch
+    (\< \>) \-
+    (\^ \v) \|
+    ch))
 
 (defn remove-cars [tracks]
   (w/walk (fn [[c ch]] [c (replace-car-char ch)]) identity tracks))
 
 (defn move [x y heading]
-  (case heading 0 [x (dec y)]
-                1 [(inc x) y]
-                2 [x (inc y)]
-                3 [(dec x) y]))
+  (case heading
+    0 [x (dec y)]
+    1 [(inc x) y]
+    2 [x (inc y)]
+    3 [(dec x) y]))
 
 (defn turn-left [heading]
   (if (= heading 0) 3 (dec heading)))
@@ -37,14 +39,18 @@
   (if (= heading 3) 0 (inc heading)))
 
 (defn update-heading [ch heading next-turn]
-  (case ch (\- \|) heading
-           \+ (case (rem next-turn 3) 0 (turn-left heading)
-                                      2 (turn-right heading)
-                                      heading)
-           \/ (case heading (0 2) (turn-right heading)
-                            (turn-left heading))
-           \\ (case heading (0 2) (turn-left heading)
-                            (turn-right heading))))
+  (case ch
+    (\- \|) heading
+    \+ (case (rem next-turn 3)
+         0 (turn-left heading)
+         2 (turn-right heading)
+         heading)
+    \/ (case heading
+         (0 2) (turn-right heading)
+         (turn-left heading))
+    \\ (case heading
+         (0 2) (turn-left heading)
+         (turn-right heading))))
 
 (defn update-next-turn [ch next-turn]
   (if (= ch \+) (inc next-turn) next-turn))
