@@ -44,8 +44,7 @@
            \/ (case heading (0 2) (turn-right heading)
                             (turn-left heading))
            \\ (case heading (0 2) (turn-left heading)
-                            (turn-right heading))
-           (assert false (str "Invalid char:" ch))))
+                            (turn-right heading))))
 
 (defn update-next-turn [ch next-turn]
   (if (= ch \+) (inc next-turn) next-turn))
