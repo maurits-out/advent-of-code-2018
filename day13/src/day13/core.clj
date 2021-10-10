@@ -84,8 +84,8 @@
 (defn do-ticks [input stop-fn result-fn]
   (let [tracks-with-cars (parse-input input)
         tracks (remove-cars tracks-with-cars)]
-    (loop [to-move (extract-cars tracks-with-cars)]
-      (let [[remaining-cars collided-cars] (next-tick to-move tracks)]
+    (loop [cars (extract-cars tracks-with-cars)]
+      (let [[remaining-cars collided-cars] (next-tick cars tracks)]
         (if (stop-fn remaining-cars collided-cars)
           (result-fn remaining-cars collided-cars)
           (recur remaining-cars))))))
