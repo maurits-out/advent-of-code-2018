@@ -31,8 +31,7 @@
 
 (defn is-match [input score-board start]
   (let [end (+ start (count input))]
-    (if (and (>= start 0) (= (subvec score-board start end) input))
-      start)))
+    (and (>= start 0) (= (subvec score-board start end) input) start)))
 
 (defn index-of-match [input score-board]
   (let [start (- (count score-board) (count input))]
