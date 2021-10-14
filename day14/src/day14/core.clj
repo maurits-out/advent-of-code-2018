@@ -29,13 +29,13 @@
        (take 10)
        (string/join)))
 
-(defn is-match [input score-board start]
+(defn match? [input score-board start]
   (let [end (+ start (count input))]
     (and (>= start 0) (= (subvec score-board start end) input) start)))
 
 (defn index-of-match [input score-board]
   (let [start (- (count score-board) (count input))]
-    (or (is-match input score-board start) (is-match input score-board (dec start)))))
+    (or (match? input score-board start) (match? input score-board (dec start)))))
 
 (defn count-recipes-to-the-left [input]
   (->> (generate-recipes-while #(not (index-of-match input %)))
