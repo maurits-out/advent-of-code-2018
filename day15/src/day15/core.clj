@@ -11,8 +11,7 @@
 
 (defn extract-units [world]
   (->> (filter (fn [[_ ch]] (contains? #{\E \G} ch)) world)
-       (map-indexed (fn [idx [c ch]] [idx {:id idx :location c, :type ch, :hit-points 200}]))
-       (into (hash-map))))
+       (map-indexed (fn [idx [c ch]] {:id idx :location c, :type ch, :hit-points 200}))))
 
 (defn replace-unit [ch]
   (case ch
@@ -22,9 +21,9 @@
 (defn replace-units [world]
   (w/walk (fn [[c ch]] [c (replace-unit ch)]) identity world))
 
-(defn turn-order [id->unit]
-  (->> (sort-by (fn [[_ unit]] (:location unit)) id->unit)
-       (map (fn [[id _]] id))))
+(defn turn-order [units]
+  (->> (sort-by :location units)
+       (map :id)))
 
 (defn identify-targets [type units]
   (for [u units :when (not= (:type u) type)]
@@ -85,34 +84,71 @@
                          (:next-square))]
     (or next-square (:location unit-to-move))))
 
-(defn ids-of-targets-in-range [unit-id id->unit]
-  (let [unit (id->unit unit-id)
-        adjacent (into (hash-set) (adjacent-squares (:location unit)))]
-    (->> id->unit
-         (filter (fn [[_ u]] (and (contains? adjacent (:location u)) (not= (:type u) (:type unit)))))
-         (map (fn [[id _]] id)))))
+(defn targets-in-range [unit all-units]
+  (let [adjacent (into (hash-set) (adjacent-squares (:location unit)))]
+    (filter #(and (contains? adjacent (:location %)) (not= (:type %) (:type unit))) all-units)))
 
-(defn is-in-range-of-any-target? [id id->unit]
-  (not-empty (ids-of-targets-in-range id id->unit)))
+(defn find-unit-by-id [id units]
+  (first (filter #(= id (:id %)) units)))
 
-(defn move-unit [id id->unit world]
-  (if (is-in-range-of-any-target? id id->unit)
-    id->unit
-    (let [unit (id->unit id)
-          move (next-move unit (vals id->unit) world)
-          moved-unit (assoc unit :location move)]
-      (assoc id->unit id moved-unit))))
+(defn alive? [id units]
+  (find-unit-by-id id units))
 
-(defn attack [id id->unit]
-  (let [target-ids (ids-of-targets-in-range id id->unit)
-        ordered (sort-by (juxt :hit-points :location) target-ids)]
-    (if (empty? ordered)
-      id->unit
-      )))
+(defn move-unit [id all-units world]
+  (let [unit-to-move (find-unit-by-id id all-units)]
+    (if (not-empty (targets-in-range unit-to-move all-units))
+      all-units
+      (let [move (next-move unit-to-move all-units world)
+            moved-unit (assoc unit-to-move :location move)]
+        (conj (disj all-units unit-to-move) moved-unit)))))
 
-(defn move-units [world start-id->unit]
-  (loop [ids (turn-order start-id->unit)
-         id->unit start-id->unit]
+(defn attack-unit [unit]
+  (let [updated-hit-points (- (:hit-points unit) 3)]
+    (assoc unit :hit-points updated-hit-points)))
+
+(defn attack [id all-units]
+  (let [attacking-unit (find-unit-by-id id all-units)
+        targets (sort-by (juxt :hit-points :location) (targets-in-range attacking-unit all-units))]
+    (if (empty? targets)
+      all-units
+      (let [unit-before-attack (first targets)
+            unit-after-attack (attack-unit unit-before-attack)]
+        (if (<= (:hit-points unit-after-attack) 0)
+          (do (println "unit dies: " id) (disj all-units unit-before-attack))
+          (conj (disj all-units unit-before-attack) unit-after-attack))))))
+
+(defn move-units [world start-units]
+  (loop [ids (turn-order start-units)
+         units (into (hash-set) start-units)]
     (if (empty? ids)
-      id->unit
-      (recur (rest ids) (move-unit (first ids) id->unit world)))))
+      units
+      (let [id (first ids)]
+        (recur (rest ids) (move-unit id units world))))))
+
+(defn do-round [world start-units]
+  (loop [ids (turn-order start-units)
+         units (into (hash-set) start-units)]
+    (if (empty? ids)
+      units
+      (let [id (first ids)]
+        (if (alive? id units)
+          (recur (rest ids) (attack id (move-unit id units world)))
+          (recur (rest ids) units))))))
+
+(defn combat-ends? [units]
+  (= (count (distinct (map :type units))) 1))
+
+(defn outcome [units completed-rounds]
+  (do
+    (println "Units: " units)
+    (println "Completed rounds: " completed-rounds)
+    (println "Hit points: " (apply + (map :hit-points units)))
+    (* completed-rounds (apply + (map :hit-points units)))))
+
+(defn play [world start-units]
+  (loop [units start-units
+         completed-rounds 0]
+    (do
+      (if (combat-ends? units)
+        (outcome units completed-rounds)
+        (recur (do-round world units) (inc completed-rounds))))))
