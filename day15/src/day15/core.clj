@@ -102,19 +102,20 @@
             moved-unit (assoc unit-to-move :location move)]
         (conj (disj all-units unit-to-move) moved-unit)))))
 
-(defn attack-unit [unit]
-  (let [updated-hit-points (- (:hit-points unit) 3)]
+(defn attack-unit [unit attack-power]
+  (let [updated-hit-points (- (:hit-points unit) attack-power)]
     (assoc unit :hit-points updated-hit-points)))
 
-(defn attack [id all-units]
+(defn attack [id all-units attack-powers]
   (let [attacking-unit (find-unit-by-id id all-units)
-        targets (sort-by (juxt :hit-points :location) (targets-in-range attacking-unit all-units))]
+        targets (sort-by (juxt :hit-points :location) (targets-in-range attacking-unit all-units))
+        attack-power (get attack-powers (:type attacking-unit) 3)]
     (if (empty? targets)
       all-units
       (let [unit-before-attack (first targets)
-            unit-after-attack (attack-unit unit-before-attack)]
+            unit-after-attack (attack-unit unit-before-attack attack-power)]
         (if (<= (:hit-points unit-after-attack) 0)
-          (do (println "unit dies: " id) (disj all-units unit-before-attack))
+          (disj all-units unit-before-attack)
           (conj (disj all-units unit-before-attack) unit-after-attack))))))
 
 (defn move-units [world start-units]
@@ -122,33 +123,44 @@
          units (into (hash-set) start-units)]
     (if (empty? ids)
       units
-      (let [id (first ids)]
-        (recur (rest ids) (move-unit id units world))))))
-
-(defn do-round [world start-units]
-  (loop [ids (turn-order start-units)
-         units (into (hash-set) start-units)]
-    (if (empty? ids)
-      units
-      (let [id (first ids)]
-        (if (alive? id units)
-          (recur (rest ids) (attack id (move-unit id units world)))
-          (recur (rest ids) units))))))
+      (recur (rest ids) (move-unit (first ids) units world)))))
 
 (defn combat-ends? [units]
   (= (count (distinct (map :type units))) 1))
 
-(defn outcome [units completed-rounds]
-  (do
-    (println "Units: " units)
-    (println "Completed rounds: " completed-rounds)
-    (println "Hit points: " (apply + (map :hit-points units)))
-    (* completed-rounds (apply + (map :hit-points units)))))
+(defn do-round [world start-units attack-powers]
+  (loop [ids (turn-order start-units)
+         units (into (hash-set) start-units)]
+    (cond
+      (empty? ids) {:round-completed true, :updated-units units}
+      (combat-ends? units) {:round-completed false, :updated-units units}
+      :else (if (empty? ids)
+              units
+              (let [id (first ids)]
+                (if (alive? id units)
+                  (recur (rest ids) (attack id (move-unit id units world) attack-powers))
+                  (recur (rest ids) units)))))))
 
-(defn play [world start-units]
+(defn count-elves [units]
+  (count (filter #(= (:type %) \E) units)))
+
+(defn play [world start-units attack-powers]
   (loop [units start-units
          completed-rounds 0]
-    (do
-      (if (combat-ends? units)
-        (outcome units completed-rounds)
-        (recur (do-round world units) (inc completed-rounds))))))
+    (let [{:keys [round-completed updated-units]} (do-round world units attack-powers)]
+      (if round-completed
+        (recur updated-units (inc completed-rounds))
+        {:outcome (* completed-rounds (apply + (map :hit-points updated-units))),
+         :elves   (count-elves updated-units)}))))
+
+(defn part1 [world start-units]
+  (let [{:keys [outcome]} (play world start-units {})]
+    outcome))
+
+(defn part2 [world start-units]
+  (let [original-elf-count (count-elves start-units)]
+    (loop [attack-power-elves 34]
+      (let [{:keys [outcome elves]} (play world start-units {\E attack-power-elves})]
+        (if (= elves original-elf-count)
+          outcome
+          (recur (inc attack-power-elves)))))))

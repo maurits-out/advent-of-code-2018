@@ -112,8 +112,36 @@
                    (it "can play example 1"
                        (let [world (parse-input (slurp (io/resource "example1.txt")))
                              units (extract-units world)]
-                         (should= 27730 (play (replace-units world) units))))
+                         (should= 27730 (part1 (replace-units world) units))))
                    (it "can play example 2"
                        (let [world (parse-input (slurp (io/resource "example2.txt")))
                              units (extract-units world)]
-                         (should= 36334 (play (replace-units world) units))))))
+                         (should= 36334 (part1 (replace-units world) units))))
+                   (it "can play example 3"
+                       (let [world (parse-input (slurp (io/resource "example3.txt")))
+                             units (extract-units world)]
+                         (should= 39514 (part1 (replace-units world) units))))
+                   (it "can play example 4"
+                       (let [world (parse-input (slurp (io/resource "example4.txt")))
+                             units (extract-units world)]
+                         (should= 27755 (part1 (replace-units world) units))))
+                   (it "can play example 5"
+                       (let [world (parse-input (slurp (io/resource "example5.txt")))
+                             units (extract-units world)]
+                         (should= 28944 (part1 (replace-units world) units))))
+                   (it "can play example 6"
+                       (let [world (parse-input (slurp (io/resource "example6.txt")))
+                             units (extract-units world)]
+                         (should= 18740 (part1 (replace-units world) units)))))
+
+          (context "Solve part 1"
+                   (it "can solve part 1"
+                       (let [world (parse-input (slurp (io/resource "input.txt")))
+                             units (extract-units world)]
+                         (should= 195774 (part1 (replace-units world) units)))))
+
+          (context "Solve part 2"
+                   (it "can solve part 2"
+                       (let [world (parse-input (slurp (io/resource "input.txt")))
+                             units (extract-units world)]
+                         (should= 37272 (part2 (replace-units world) units))))))
