@@ -22,4 +22,21 @@
 
           (context "Part 2"
                    (it "can solve part 2."
-                       (should= 1 (get (run-test-program-part2 (slurp (io/resource "input-test-program.txt"))) 0)))))
+                       (let [opcode-mapping {0  :gtrr
+                                             1  :borr
+                                             2  :gtir
+                                             3  :eqri
+                                             4  :addr
+                                             5  :seti
+                                             6  :eqrr
+                                             7  :gtri
+                                             8  :banr
+                                             9  :addi
+                                             10 :setr
+                                             11 :mulr
+                                             12 :bori
+                                             13 :muli
+                                             14 :eqir
+                                             15 :bani}
+                             input (slurp (io/resource "input-test-program.txt"))]
+                         (should= 503 (run-test-program-part2 input opcode-mapping))))))
