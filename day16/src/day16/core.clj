@@ -36,7 +36,7 @@
   (for [s (string/split input #"\n\n")] (parse-sample s)))
 
 (defn evaluate
-  ([[opcode a b c] reg opcode-mapping]
+  ([reg [opcode a b c] opcode-mapping]
    (evaluate reg a b c (opcode-fn (opcode-mapping opcode))))
   ([reg a b c fn]
    (assoc reg c (apply fn [reg a b]))))
@@ -62,5 +62,5 @@
 (defn run-test-program-part2 [input opcode-mapping]
   (->> (string/split-lines input)
        (map #(parse-instruction %))
-       (reduce #(evaluate %2 %1 opcode-mapping) [0 0 0 0])
+       (reduce #(evaluate %1 %2 opcode-mapping) [0 0 0 0])
        (first)))
