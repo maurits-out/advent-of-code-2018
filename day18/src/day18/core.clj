@@ -20,7 +20,6 @@
                                [(+ row dr) (+ column dc)])]
     (->> adjacent-coordinates
          (map #(world %))
-         (remove nil?)
          (frequencies))))
 
 (defn freq-at-least [freq ch min]
