@@ -19,7 +19,7 @@
         adjacent-coordinates (for [dr r, dc r, :when (not= dr dc 0)]
                                [(+ row dr) (+ column dc)])]
     (->> adjacent-coordinates
-         (map #(get world %))
+         (map #(world %))
          (remove nil?)
          (frequencies))))
 
@@ -41,7 +41,7 @@
 
 (defn resource-value [world]
   (let [freq (frequencies (vals world))]
-    (* (get freq \| 0) (get freq \# 0))))
+    (* (freq \|) (freq \#))))
 
 (defn part1 [gens]
   (let [end-state (nth gens 10)]
