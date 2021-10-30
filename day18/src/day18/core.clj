@@ -38,13 +38,13 @@
 (defn generations [world]
   (iterate next-generation world))
 
-(defn resource-value [world]
-  (let [freq (frequencies (vals world))]
+(defn resource-value [gens minutes]
+  (let [world (nth gens minutes)
+        freq (frequencies (vals world))]
     (* (freq \|) (freq \#))))
 
 (defn part1 [gens]
-  (let [end-state (nth gens 10)]
-    (resource-value end-state)))
+  (resource-value gens 10))
 
 ;; https://stackoverflow.com/questions/19894216/clojure-find-repetition
 (defn get-cycle [xs]
@@ -59,4 +59,4 @@
         diff (- second first)
         i (* diff (quot (- minutes first) diff))
         j (- minutes first i)]
-    (resource-value (nth gens (+ first j)))))
+    (resource-value gens (+ first j))))
