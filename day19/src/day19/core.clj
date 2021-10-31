@@ -39,8 +39,8 @@
 (defn ip-out-of-range? [ip program]
   (or (< ip 0) (>= ip (count program))))
 
-(defn execute [{:keys [ip-reg program]}]
-  (loop [state {:ip 0, :reg [0 0 0 0 0 0]}]
+(defn execute [{:keys [ip-reg program]} reg-0]
+  (loop [state {:ip 0, :reg [reg-0 0 0 0 0 0]}]
     (if (ip-out-of-range? (:ip state) program)
       (get (:reg state) 0)
       (let [new-state (apply-instruction state ip-reg (get program (:ip state)))]

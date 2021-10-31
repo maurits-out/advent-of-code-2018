@@ -10,7 +10,7 @@
 
           (context "Parsing"
                    (it "should parse the input."
-                       (should= {:ip-reg 0,
+                       (should= {:ip-reg  0,
                                  :program [["seti" 5 0 1] ["seti" 6 0 2] ["addi" 0 1 0]
                                            ["addr" 1 2 3] ["setr" 1 0 0] ["seti" 8 0 4]
                                            ["seti" 9 0 5]]} (parse-input example))))
@@ -21,8 +21,12 @@
 
           (context "Example"
                    (it "should execute the example."
-                       (should= 6 (execute (parse-input example)))))
+                       (should= 6 (execute (parse-input example) 0))))
 
           (context "Part 1"
                    (it "should execute the puzzle input."
-                       (should= 2106 (execute (parse-input (slurp input-file)))))))
+                       (should= 2106 (execute (parse-input (slurp input-file)) 0))))
+
+          (context "Part 2"
+                   (it "should execute the puzzle input."
+                       (should= 2106 (execute (parse-input (slurp input-file)) 1)))))
