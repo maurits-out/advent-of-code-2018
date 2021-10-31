@@ -43,23 +43,22 @@
   (loop [state {:ip 0, :reg [0 0 0 0 0 0]}]
     (if (ip-out-of-range? (:ip state) program)
       (get (:reg state) 0)
-      (let [new-state (apply-instruction state ip-reg (get program (:ip state)))]
-        (recur new-state)))))
+      (recur (apply-instruction state ip-reg (get program (:ip state)))))))
 
 (defn factors [n]
   (into (hash-set)
         (apply concat (for [x (range 1 (inc (Math/sqrt n))) :when (zero? (rem n x))]
-                        [x (/ n x)]))))
+                        [x (quot n x)]))))
 
-(defn sum-of-divisors [n]
+(defn sum-of-factors [n]
   (apply + (factors n)))
 
 (defn take-short-cut [reg]
-  (let [sum (sum-of-divisors (get reg 2))
+  (let [sum (sum-of-factors (get reg 2))
         updated-reg (assoc reg
                       0 sum
                       3 15)]
-    {:ip 16 :reg updated-reg}))
+    {:ip 16, :reg updated-reg}))
 
 (defn update-state [state ip-reg instruction]
   (if (= (:ip state) 1)
