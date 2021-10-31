@@ -34,14 +34,40 @@
 (defn apply-instruction [{:keys [ip reg]} ip-reg instruction]
   (let [updated-reg (evaluate (assoc reg ip-reg ip) instruction)
         updated-ip (inc (get updated-reg ip-reg))]
-    {:ip updated-ip :ip-reg ip-reg :reg updated-reg}))
+    {:ip updated-ip :reg updated-reg}))
 
 (defn ip-out-of-range? [ip program]
   (or (< ip 0) (>= ip (count program))))
 
-(defn execute [{:keys [ip-reg program]} reg-0]
-  (loop [state {:ip 0, :reg [reg-0 0 0 0 0 0]}]
+(defn execute-part-1 [{:keys [ip-reg program]}]
+  (loop [state {:ip 0, :reg [0 0 0 0 0 0]}]
     (if (ip-out-of-range? (:ip state) program)
       (get (:reg state) 0)
       (let [new-state (apply-instruction state ip-reg (get program (:ip state)))]
         (recur new-state)))))
+
+(defn factors [n]
+  (into (hash-set)
+        (apply concat (for [x (range 1 (inc (Math/sqrt n))) :when (zero? (rem n x))]
+                        [x (/ n x)]))))
+
+(defn sum-of-divisors [n]
+  (apply + (factors n)))
+
+(defn take-short-cut [reg]
+  (let [sum (sum-of-divisors (get reg 2))
+        updated-reg (assoc reg
+                      0 sum
+                      3 15)]
+    {:ip 16 :reg updated-reg}))
+
+(defn update-state [state ip-reg instruction]
+  (if (= (:ip state) 1)
+    (take-short-cut (:reg state))
+    (apply-instruction state ip-reg instruction)))
+
+(defn execute-part-2 [{:keys [ip-reg program]}]
+  (loop [state {:ip 0, :reg [1 0 0 0 0 0]}]
+    (if (ip-out-of-range? (:ip state) program)
+      (get (:reg state) 0)
+      (recur (update-state state ip-reg (get program (:ip state)))))))

@@ -21,12 +21,12 @@
 
           (context "Example"
                    (it "should execute the example."
-                       (should= 6 (execute (parse-input example) 0))))
+                       (should= 6 (execute-part-1 (parse-input example)))))
 
           (context "Part 1"
                    (it "should execute the puzzle input."
-                       (should= 2106 (execute (parse-input (slurp input-file)) 0))))
+                       (should= 2106 (execute-part-1 (parse-input (slurp input-file))))))
 
           (context "Part 2"
                    (it "should execute the puzzle input."
-                       (should= 2106 (execute (parse-input (slurp input-file)) 1)))))
+                       (should= 23021280 (execute-part-2 (parse-input (slurp input-file)))))))
