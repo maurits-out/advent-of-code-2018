@@ -46,23 +46,22 @@
       (recur (apply-instruction state ip-reg (get program (:ip state)))))))
 
 (defn factors [n]
-  (into (hash-set)
-        (apply concat (for [x (range 1 (inc (Math/sqrt n))) :when (zero? (rem n x))]
-                        [x (quot n x)]))))
+  (distinct (apply concat (for [i (range 1 (inc (Math/sqrt n))) :when (zero? (rem n i))]
+                            [i (quot n i)]))))
 
 (defn sum-of-factors [n]
   (apply + (factors n)))
 
-(defn take-short-cut [reg]
+(defn take-short-cut [reg ip-reg]
   (let [sum (sum-of-factors (get reg 2))
         updated-reg (assoc reg
                       0 sum
-                      3 15)]
+                      ip-reg 15)]
     {:ip 16, :reg updated-reg}))
 
 (defn update-state [state ip-reg instruction]
   (if (= (:ip state) 1)
-    (take-short-cut (:reg state))
+    (take-short-cut (:reg state) ip-reg)
     (apply-instruction state ip-reg instruction)))
 
 (defn execute-part-2 [{:keys [ip-reg program]}]
