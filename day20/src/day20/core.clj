@@ -5,17 +5,23 @@
 
 (def char->direction {\E [1 0], \S [0 1], \W [-1 0], \N [0 -1]})
 
-(defn move [pos step]
-  (mapv + pos (char->direction step)))
+(defn move [location step]
+  (mapv + location (char->direction step)))
 
-(defn add-edges [graph current-positions step]
-  (reduce #(update %1 %2 (fnil conj #{}) (move %2 step)) graph current-positions))
+(defn update-distance [distances [location doors]]
+  (if (distances location)
+    (update distances location #(min % doors))
+    (assoc distances location doors)))
 
-(defn follow [{:keys [graph current-positions starts ends stack] :as state} step]
+(defn update-distances [distances current-positions step]
+  (let [updated-positions (map (fn [[location doors]] [(move location step) (inc doors)]) current-positions)]
+    (reduce #(update-distance %1 %2) distances updated-positions)))
+
+(defn follow [{:keys [distances current-positions starts ends stack] :as state} step]
   (case step
     (\E \S \W \N) (assoc state
-                    :graph (add-edges graph current-positions step)
-                    :current-positions (set (mapv #(move % step) current-positions)))
+                    :distances (update-distances distances current-positions step)
+                    :current-positions (map (fn [[location doors]] [(move location step) (inc doors)]) current-positions))
     \( (assoc state
          :starts current-positions
          :ends #{}
@@ -31,23 +37,16 @@
     (\$ \^) state))
 
 (defn initial-state []
-  {:graph {} :current-positions #{origin} :starts #{origin} :ends #{} :stack (deque)})
+  {:distances         {origin 0}
+   :current-positions #{[origin 0]}
+   :starts            #{[origin 0]}
+   :ends              #{}
+   :stack             (deque)})
 
 (defn follow-route [route]
   (reduce #(follow %1 %2) (initial-state) route))
 
-(defn count-doors [graph destination]
-  (loop [queue (deque [origin 0])
-         visited #{origin}]
-    (let [[location distance] (peek-first queue)]
-      (if (= location destination)
-        distance
-        (recur
-          (reduce #(add-last %1 [%2 (inc distance)]) (remove-first queue) (graph location))
-          (into visited (graph location)))))))
-
-(defn find-largest-numbers-of-doors [route]
-  (let [graph (:graph (follow-route route))
-        reachable-rooms (distinct (apply concat (vals graph)))]
-    (apply max (for [r reachable-rooms]
-                 (count-doors graph r)))))
+(defn solve [route]
+  (let [distances (vals (:distances (follow-route route)))]
+    {:part1 (apply max distances)
+     :part2 (count (filter #(>= % 1000) distances))}))
