@@ -13,15 +13,18 @@
     (update distances location #(min % doors))
     (assoc distances location doors)))
 
-(defn update-distances [distances current-positions step]
-  (let [updated-positions (map (fn [[location doors]] [(move location step) (inc doors)]) current-positions)]
-    (reduce #(update-distance %1 %2) distances updated-positions)))
+(defn move-positions [current-positions step]
+  (for [[location doors] current-positions] [(move location step) (inc doors)]))
+
+(defn update-distances [distances positions]
+  (reduce #(update-distance %1 %2) distances positions))
 
 (defn follow [{:keys [distances current-positions starts ends stack] :as state} step]
   (case step
-    (\E \S \W \N) (assoc state
-                    :distances (update-distances distances current-positions step)
-                    :current-positions (map (fn [[location doors]] [(move location step) (inc doors)]) current-positions))
+    (\E \S \W \N) (let [new-positions (move-positions current-positions step)]
+                    (assoc state
+                      :distances (update-distances distances new-positions)
+                      :current-positions new-positions))
     \( (assoc state
          :starts current-positions
          :ends #{}
