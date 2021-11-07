@@ -7,7 +7,7 @@
   (mapv + location (char->direction step)))
 
 (defn update-distance [distances [location doors]]
-  (update distances location #(if % (min % doors) doors)))
+  (update distances location (fnil min doors)))
 
 (defn move-positions [current-positions step]
   (into (hash-map) (for [[location doors] current-positions]
