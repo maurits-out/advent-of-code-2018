@@ -8,4 +8,8 @@
 (describe "Day 21"
 
   (it "should solve part1."
-    (should= 12980435 (part1 (slurp input-file)))))
+    (should= 12980435 (part1-new)))
+
+  (it "should solve part2."
+    (should= 12980435 (part2-new)))
+  )
