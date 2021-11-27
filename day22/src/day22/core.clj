@@ -5,6 +5,7 @@
         y (range 0 (inc ty))]
     [x y]))
 
+;; https://stackoverflow.com/questions/3906831/how-do-i-generate-memoized-recursive-functions-in-clojure
 (defn erosion-level-fn [[tx ty] depth]
   (let [erosion-level (fn [mem-erosion-level [x y]]
                         (let [erosion-level (fn [c] (mem-erosion-level mem-erosion-level c))
