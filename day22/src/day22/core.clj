@@ -8,7 +8,7 @@
 ;; https://stackoverflow.com/questions/3906831/how-do-i-generate-memoized-recursive-functions-in-clojure
 (defn erosion-level-fn [[tx ty] depth]
   (let [erosion-level (fn [mem-erosion-level [x y]]
-                        (let [erosion-level (fn [c] (mem-erosion-level mem-erosion-level c))
+                        (let [erosion-level (partial mem-erosion-level mem-erosion-level)
                               g (cond
                                   (= 0 x y) 0
                                   (and (= x tx) (= y ty)) 0
@@ -19,11 +19,13 @@
         mem-erosion-level (memoize erosion-level)]
     (partial mem-erosion-level mem-erosion-level)))
 
+(defn region-type-fn [target depth]
+  (comp #(rem % 3) (erosion-level-fn target depth)))
+
 (defn part1 [target depth]
   (->>
     (coordinates target)
-    (map (erosion-level-fn target depth))
-    (map #(rem % 3))
+    (map (region-type-fn target depth))
     (apply +)))
 
 (defn -main []
