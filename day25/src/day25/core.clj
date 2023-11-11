@@ -14,7 +14,7 @@
 
 (defn parse-input [input]
   (let [lines (string/split-lines input)]
-    (mapv parse-line lines)))
+    (set (mapv parse-line lines))))
 
 (defn sum [numbers]
   (reduce + numbers))
@@ -25,22 +25,22 @@
 (defn is-within-distance? [point1 point2]
   (<= (manhattan-distance point1 point2) max-distance))
 
-(defn find-neighbors [fixed-points unvisited point]
-  (filter #(and (contains? unvisited %) (is-within-distance? point %)) fixed-points))
+(defn find-neighbors [remaining point]
+  (filter #(is-within-distance? point %) remaining))
 
-(defn dfs [fixed-points unvisited point]
-  (let [updated-unvisited (disj unvisited point)
-        neighbors (find-neighbors fixed-points unvisited point)]
-    (reduce (partial dfs fixed-points) updated-unvisited neighbors)))
+(defn dfs [remaining point]
+  (let [updated-remaining (disj remaining point)
+        neighbors (find-neighbors updated-remaining point)]
+    (reduce dfs updated-remaining neighbors)))
 
 (defn count-constellations [fixed-points]
-  (loop [current-count 0
-         unvisited (set fixed-points)]
-    (if (empty? unvisited)
-      current-count
-      (let [point (first unvisited)
-            updated-unvisited (dfs fixed-points unvisited point)]
-        (recur (inc current-count) updated-unvisited)))))
+  (loop [acc 0
+         remaining fixed-points]
+    (if (empty? remaining)
+      acc
+      (let [point (first remaining)
+            updated-remaining (dfs remaining point)]
+        (recur (inc acc) updated-remaining)))))
 
 (defn solve [input]
   (let [fixed-points (parse-input input)]
